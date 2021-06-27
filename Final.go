@@ -81,9 +81,7 @@ func main() {
 
 		var dataState GPS
 		json.Unmarshal(bodyBytes, &dataState)
-
-
-		
+  		
 		fmt.Println(dataState)
 	
 		state := dataState.State.State
@@ -107,8 +105,12 @@ func main() {
 		ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 		var stateCases bson.M
 		collection.FindOne(ctx, bson.M{"state" : state}).Decode(&stateCases)
+		if len(stateCases)==0 {
+			return c.String(200,"Sorry, your GPS co-ordinates do not lie in the Indian territory. This website only contains indian data.")
+		}	
 		fmt.Println(stateCases)
-		return c.String(200, "ABHINAV")
+		// "There are " + stateCases["cases"].(string) + " active covid-19 cases in " + state
+		return c.String(200,"There are " + stateCases["cases"].(string) + " active covid-19 cases in " + state	)
 
 
 	})
@@ -173,10 +175,10 @@ func main() {
 
 		
 		ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
-		fmt.Println("HEREREERERERERERERERERERERERERE")
+		fmt.Println("before inserting into database")
 		collection.Drop(ctx)
 		collection.InsertMany(ctx,  statewiseData)
-		fmt.Println("UQQUQUQUQU")
+		fmt.Println("inserted into database")
 		return
 	}) 
 	cr.Start()
