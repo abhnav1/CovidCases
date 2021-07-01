@@ -85,7 +85,7 @@ func main() {
 		fmt.Println(dataState)
 	
 		state := dataState.State.State
-
+		
 
 		clientOptions := options.Client().ApplyURI("mongodb+srv://abhnv:abhnv@cluster0.l4l4b.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -106,15 +106,15 @@ func main() {
 		var stateCases bson.M
 		collection.FindOne(ctx, bson.M{"state" : state}).Decode(&stateCases)
 		if len(stateCases)==0 {
-			return c.String(200,"Sorry, your GPS co-ordinates do not lie in the Indian territory. This website only contains indian data.")
+			return c.String(200,"Sorry, your GPS co-ordinates do not lie in the Indian territory. This website only contains indian data. 	State = "  + state)
 		}	
 		fmt.Println(stateCases)
 		// "There are " + stateCases["cases"].(string) + " active covid-19 cases in " + state
-		return c.String(200,"There are " + stateCases["cases"].(string) + " active covid-19 cases in " + state	)
+		return c.String(200,"There are " + stateCases["cases"].(string) + " confirmed covid-19 cases in " + state	)
 
 
 	})
-	cr.AddFunc("@midnight", func() {
+	cr.AddFunc("@every 30m", func() {
 		
 		urlCovidData := "http://api.covid19india.org/data.json"
 
